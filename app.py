@@ -1,12 +1,12 @@
-
 import streamlit as st
 import pandas as pd
-import joblib
+import pickle
 
-# Load the trained pipeline
-pipeline = joblib.load("churn_pipeline.pkl")
+# Load the pipeline using pickle (no joblib)
+with open("churn_pipeline.pkl", "rb") as f:
+    pipeline = pickle.load(f)
 
-# Feature order
+# List of features used during model training
 feature_order = [
     'gender', 'SeniorCitizen', 'Partner', 'Dependents', 'tenure',
     'PhoneService', 'Contract', 'PaperlessBilling', 'MonthlyCharges',
@@ -22,7 +22,7 @@ feature_order = [
     'PaymentMethod_Electronic check', 'PaymentMethod_Mailed check'
 ]
 
-# Helper function to convert Yes/No to binary
+# Helper function to convert "Yes"/"No" to 1/0
 def yes_no_to_binary(choice):
     return 1 if choice == "Yes" else 0
 
@@ -56,7 +56,6 @@ with st.form("churn_form"):
     submit = st.form_submit_button("🔍 Predict")
 
 if submit:
-    # Prepare input data
     input_data = {
         'gender': gender,
         'SeniorCitizen': SeniorCitizen,
@@ -84,3 +83,4 @@ if submit:
 
     except Exception as e:
         st.error(f"Prediction failed: {e}")
+
